@@ -7,6 +7,7 @@ import {
   Feather,
   FontAwesome,
   MaterialIcons,
+  MaterialCommunityIcons,
 } from "@expo/vector-icons";
 
 export default function Layout() {
@@ -28,40 +29,19 @@ export default function Layout() {
         name="home"
         options={{
           headerShown: false,
-          title: "Home",
+          title: "Trang chủ",
           tabBarIcon: ({ color, size }) => (
             <MaterialIcons name="home" color={color} size={size} />
           ),
         }}
       ></Tabs.Screen>
       <Tabs.Screen
-        name="cinemas"
+        name="compare"
         options={{
           headerShown: false,
-          title: "Cinemas",
+          title: "So sánh",
           tabBarIcon: ({ color, size }) => (
-            <Feather name="film" size={size} color={color} />
-          ),
-        }}
-      ></Tabs.Screen>
-      <Tabs.Screen
-        name="ticket/index"
-        options={{
-          headerShown: false,
-          title: "Ticket",
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="ticket" color={color} size={size} />
-          ),
-        }}
-      ></Tabs.Screen>
-      <Tabs.Screen
-        name="movie/index"
-        options={{
-          headerShown: false,
-
-          title: "Movie",
-          tabBarIcon: ({ color, size }) => (
-            <AntDesign name="camerao" size={size} color={color} />
+            <MaterialCommunityIcons name="compare" size={size} color={color} />
           ),
         }}
       ></Tabs.Screen>
@@ -69,10 +49,9 @@ export default function Layout() {
         name="profile/index"
         options={{
           headerShown: false,
-
-          title: "Profile",
+          title: "Cá nhân",
           tabBarIcon: ({ color, size }) => (
-            <AntDesign name="profile" size={size} color={color} />
+            <AntDesign name="user" size={size} color={color} />
           ),
         }}
       ></Tabs.Screen>

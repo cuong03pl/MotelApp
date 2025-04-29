@@ -9,11 +9,6 @@ export default function _layout() {
         name="index"
         options={{ headerShown: false }}
       ></Stack.Screen>
-      <Stack.Screen
-        name="cinemasdetails"
-        options={{ headerShown: false }}
-      ></Stack.Screen>
-      <Stack.Screen name="seat" options={{ headerShown: false }}></Stack.Screen>
     </Stack>
   );
 }
