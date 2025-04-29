@@ -21,6 +21,10 @@ export default function Layout() {
         name="post"
         options={{ headerShown: false }}
       ></Stack.Screen>
+      <Stack.Screen
+        name="news"
+        options={{ headerShown: false }}
+      ></Stack.Screen>
     </Stack>
   );
 }

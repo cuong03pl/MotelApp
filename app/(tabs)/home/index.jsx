@@ -9,6 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Categories from "../../components/Categories";
 import News from "../../components/News";
 import { Picker } from '@react-native-picker/picker';
+import Tags from "../../components/Tags";
 
 const priceRanges = [
   { label: "Tất cả", min: 0, max: 100000000 },
@@ -137,9 +138,13 @@ export default function home() {
           minArea: areaFilters[filters.areaRange].min,
           maxArea: areaFilters[filters.areaRange].max,
           categoryId: selectedCategory || searchParams.categoryId || null,
-          provinceSlug: searchParams.provinceSlug || null,
           districtSlug: searchParams.districtSlug || null,
         };
+        
+        if (searchParams.provinceSlug && searchParams.provinceSlug !== "null") {
+          params.provinceSlug = searchParams.provinceSlug;
+        }
+        
         const res = await GetApprovedPosts(params);
 
         setTotalPage(res?.data?.totalPages);
@@ -150,7 +155,14 @@ export default function home() {
     };
 
     fetchAPI();
-  }, [searchParams, currentPage, selectedCategory, filters]);
+  }, [
+    currentPage, 
+    selectedCategory, 
+    filters,
+    searchParams.provinceSlug,
+    searchParams.districtSlug,
+    searchParams.categoryId
+  ]);
 
   const toggleFilters = useCallback(() => {
     setShowFilters(prev => !prev);
@@ -162,6 +174,13 @@ export default function home() {
       areaRange: 0
     });
     setSelectedCategory(null);
+    setSearchText('');
+    // Reset URL parameters
+    const newParams = { ...router.params };
+    delete newParams.provinceSlug;
+    delete newParams.districtSlug;
+    delete newParams.categoryId;
+    router.setParams(newParams);
   }, []);
 
   const handleCategorySelect = useCallback((categoryId) => {
@@ -183,6 +202,16 @@ export default function home() {
     );
   }, [showFilters, filters, categories, selectedCategory, handleCategorySelect, resetFilters]);
 
+  // Check if any filter is active
+  const isFilterActive = useMemo(() => {
+    return filters.priceRange !== 0 || 
+           filters.areaRange !== 0 || 
+           selectedCategory !== null || 
+           searchText.trim() !== '' ||
+           searchParams.provinceSlug ||
+           searchParams.districtSlug;
+  }, [filters, selectedCategory, searchText, searchParams]);
+
   return (
     <SafeAreaView className="flex-1 bg-gray-100">
       <StatusBar style="auto" />
@@ -192,7 +221,11 @@ export default function home() {
         <View className="flex-row items-center justify-between mb-3">
           <Text className="text-xl font-bold">Trang chủ</Text>
           <TouchableOpacity onPress={toggleFilters}>
-            <Ionicons name="filter" size={24} color="#3B82F6" />
+            <Ionicons 
+              name="filter" 
+              size={24} 
+              color={isFilterActive ? "#F43F5E" : "#3B82F6"} 
+            />
           </TouchableOpacity>
         </View>
 
@@ -204,7 +237,14 @@ export default function home() {
             className="flex-1 ml-2"
             value={searchText}
             onChangeText={setSearchText}
+            onSubmitEditing={() => setCurrentPage(1)}
+            returnKeyType="search"
           />
+          {searchText.length > 0 && (
+            <TouchableOpacity onPress={() => setSearchText('')}>
+              <Ionicons name="close-circle" size={20} color="#9CA3AF" />
+            </TouchableOpacity>
+          )}
         </View>
       </View>
 
@@ -213,7 +253,7 @@ export default function home() {
 
       {/* Categories */}
       <Categories />
-      
+      <Tags />
       {/* Posts List */}
       <View className="flex-1 px-2">
         <Post data={posts} />
