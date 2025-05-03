@@ -25,6 +25,11 @@ export default function Layout() {
         name="news"
         options={{ headerShown: false }}
       ></Stack.Screen>
+      <Stack.Screen
+        name="chat"
+        options={{ headerShown: false }}
+      ></Stack.Screen>
+     
     </Stack>
   );
 }

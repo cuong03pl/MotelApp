@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Linking, Share, TextInput } from 'react-native';
+import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Linking, Share, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { GetPostById, GetReviewsByPost, CreateComment } from '../Services/ServiceAPI';
+import { GetPostById, GetReviewsByPost, CreateComment, GetUserById } from '../Services/ServiceAPI';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { convertPrice } from '../utils/convertPrice';
 import { getLastDate } from '../utils/getLastDate';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 
 export default function PostDetail() {
   const [post, setPost] = useState(null);
@@ -32,8 +33,9 @@ export default function PostDetail() {
         // Get current user
         const token = await AsyncStorage.getItem('token');
         if (token) {
-          const userResponse = await GetUserByToken(token);
-          setUser(userResponse.data);
+          const user_data = jwtDecode(token);
+          const response = await GetUserById(user_data.sub);
+          setUser(response.data);
         }
       } catch (error) {
         console.error('Error fetching post details:', error);
@@ -78,6 +80,41 @@ export default function PostDetail() {
     } catch (error) {
       console.error('Error creating comment:', error);
     }
+  };
+
+  const handleChat = () => {
+    if (!user) {
+      Alert.alert(
+        'Cần đăng nhập',
+        'Vui lòng đăng nhập để nhắn tin với chủ trọ',
+        [
+          {
+            text: 'Đăng nhập',
+            onPress: () => router.push('/signin')
+          },
+          {
+            text: 'Huỷ',
+            style: 'cancel'
+          }
+        ]
+      );
+      return;
+    }
+    if (!post.ownerId) {
+      Alert.alert('Lỗi', 'Không thể liên hệ với chủ trọ. Vui lòng thử lại sau.');
+      return;
+    }
+    
+    router.push({
+      pathname: "/chat/new",
+      params: { 
+        receiverId: post.ownerId,
+        receiverName: post.user.fullName,
+        receiverAvatar: post.user.avatar,
+        postId: post.id,
+        postTitle: post.title
+      }
+    });
   };
 
   if (!post) {
@@ -340,15 +377,25 @@ export default function PostDetail() {
         </View>
       </ScrollView>
 
-      {/* Call Button */}
+      {/* Call and Message Buttons */}
       <View className="px-4 py-3 border-t border-gray-200">
-        <TouchableOpacity 
-          className="bg-green-500 py-3 rounded-lg flex-row justify-center items-center"
-          onPress={handleCall}
-        >
-          <Ionicons name="call" size={20} color="white" />
-          <Text className="text-white font-bold ml-2">Gọi ngay</Text>
-        </TouchableOpacity>
+        <View className="flex-row space-x-3">
+          <TouchableOpacity 
+            className="bg-green-500 py-3 rounded-lg flex-row justify-center items-center flex-1"
+            onPress={handleCall}
+          >
+            <Ionicons name="call" size={20} color="white" />
+            <Text className="text-white font-bold ml-2">Gọi ngay</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            className="bg-blue-500 py-3 rounded-lg flex-row justify-center items-center flex-1"
+            onPress={handleChat}
+          >
+            <Ionicons name="chatbubble-ellipses" size={20} color="white" />
+            <Text className="text-white font-bold ml-2">Nhắn tin</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   );

@@ -176,7 +176,13 @@ export const GetMessages = async (conversationId) => {
 };
 
 export const SendMessage = async (params) => {
-  const res = await post(`Messages/send`, params);
+  const messageData = {
+    conversationId: params.conversationId,
+    senderId: params.senderId,
+    content: params.message
+  };
+  
+  const res = await post(`Messages/send`, messageData);
   return res;
 };
 

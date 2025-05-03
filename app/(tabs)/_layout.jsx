@@ -8,6 +8,7 @@ import {
   FontAwesome,
   MaterialIcons,
   MaterialCommunityIcons,
+  Ionicons,
 } from "@expo/vector-icons";
 
 export default function Layout() {
@@ -42,6 +43,16 @@ export default function Layout() {
           title: "So sánh",
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons name="compare" size={size} color={color} />
+          ),
+        }}
+      ></Tabs.Screen>
+      <Tabs.Screen
+        name="messages/index"
+        options={{
+          headerShown: false,
+          title: "Tin nhắn",
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="chatbubble-ellipses" size={size} color={color} />
           ),
         }}
       ></Tabs.Screen>
