@@ -13,8 +13,8 @@ export const GetPostById = async (slug) => {
   const res = await get(`Posts/${slug}`);
   return res;
 };
-export const GetUserByToken = async (token) => {
-  const res = await get(`Users/${token}`);
+export const GetUserById = async (id) => {
+  const res = await get(`Users/${id}`);
   return res;
 };
 export const GetPostsByProvinceSlug = async (id, params) => {

@@ -1,8 +1,8 @@
-import jwt_decode from 'jwt-decode';
+import { jwtDecode } from 'jwt-decode';
 
 export const decodeToken = (token) => {
   try {
-    return jwt_decode(token);
+    return jwtDecode(token);
   } catch (error) {
     console.error('Error decoding token:', error);
     return null;
@@ -11,7 +11,7 @@ export const decodeToken = (token) => {
 
 export const isTokenExpired = (token) => {
   try {
-    const decoded = jwt_decode(token);
+    const decoded = jwtDecode(token);
     const currentTime = Date.now() / 1000;
     return decoded.exp < currentTime;
   } catch (error) {
@@ -22,7 +22,7 @@ export const isTokenExpired = (token) => {
 
 export const getTokenData = (token) => {
   try {
-    const decoded = jwt_decode(token);
+    const decoded = jwtDecode(token);
     return {
       userId: decoded.userId,
       email: decoded.email,
