@@ -58,15 +58,12 @@ export default function MessagesScreen() {
       // Get user ID from token
       const token = await AsyncStorage.getItem("token");
       if (!token) {
-        console.log("No token found, redirecting to signin");
         router.replace("/signin");
         return;
       }
       
-      console.log("Token found, decoding user information");
       const decoded = jwtDecode(token);
       const currentUserId = decoded.sub || decoded.userId;
-      console.log("Current user ID:", currentUserId);
       setUserId(currentUserId);
       
       // Load conversations
@@ -85,13 +82,10 @@ export default function MessagesScreen() {
     }
     
     try {
-      console.log("Fetching conversations for user ID:", userId);
       const response = await GetConversations(userId);
-      console.log("API response:", response);
       
       if (response && response.data) {
         // Process conversations to add partner information
-        console.log("Processing conversations:", response.data.length);
         const conversationsWithPartners = await Promise.all(
           response.data.map(async (conversation) => {
             // Determine if the partner is sender or receiver
@@ -100,7 +94,6 @@ export default function MessagesScreen() {
                 ? conversation.receiverId 
                 : conversation.senderId;
             
-            console.log("Getting partner info for ID:", partnerId);
             
             // Get partner user data
             try {
@@ -125,7 +118,6 @@ export default function MessagesScreen() {
           })
         );
         
-        console.log("Processed conversations:", conversationsWithPartners.length);
         
         // Sort by last message date
         const sortedConversations = conversationsWithPartners.sort((a, b) => 

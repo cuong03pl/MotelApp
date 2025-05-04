@@ -124,10 +124,7 @@ const ChatScreen = () => {
     const maxRetries = 2;
     
     const attemptSend = async () => {
-        console.log("Sending message with content:", messageContent
-            , "to conversationId:", id
-            , "with senderId:", user.id
-        );
+       
         
       try {
         await SendMessage({
@@ -140,7 +137,6 @@ const ChatScreen = () => {
         fetchMessages(false);
       } catch (error) {
         console.error(`Error sending message (attempt ${retries + 1}):`, error);
-        console.log("Error details:", error.response?.data || "No detailed error info");
         
         if (retries < maxRetries) {
           // Retry sending the message
@@ -188,7 +184,6 @@ const ChatScreen = () => {
   };
 
   const formatMessageTime = (timestamp) => {
-    console.log("timestamp", timestamp);
     
     if (!timestamp) return "";
 

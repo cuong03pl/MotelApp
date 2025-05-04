@@ -63,7 +63,6 @@ export default function compare() {
         pageSize: 1000
       };
       const res = await GetApprovedPosts(params);
-      console.log(res?.data?.data);
       
       setAvailableRooms(res?.data?.data || []);
     } catch (error) {

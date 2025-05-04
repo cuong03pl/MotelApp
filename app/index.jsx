@@ -18,11 +18,7 @@ export default function App() {
       // Check for different possible token keys
       const userToken = await AsyncStorage.getItem('userToken');
       const token = await AsyncStorage.getItem('token');
-      
-      console.log('Checking login status:');
-      console.log('userToken:', userToken);
-      console.log('token:', token);
-      
+    
       // If either token exists, consider user as logged in
       setIsLoggedIn(userToken !== null || token !== null);
       setLoading(false);

@@ -123,7 +123,7 @@ export const UpdatePost = async (id, params) => {
 
 export const UpdateUser = async (id, params) => {
   const res = await put(`Users/${id}`, params, {
-    headers: { "Content-Type": "multipart/form-data" },
+    headers: { "Content-Type": "application/json" },
   });
   return res;
 };

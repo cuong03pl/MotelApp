@@ -33,6 +33,10 @@ export default function Layout() {
         name="favorites"
         options={{ headerShown: false }}
       ></Stack.Screen>
+       <Stack.Screen
+        name="user"
+        options={{ headerShown: false }}
+      ></Stack.Screen>
      
     </Stack>
   );

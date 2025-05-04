@@ -1,7 +1,7 @@
 import { View, Text, Image, TouchableOpacity, ActivityIndicator, ScrollView, Alert } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { GetUserById } from "../../Services/ServiceAPI";
 import { jwtDecode } from "jwt-decode";
@@ -14,6 +14,12 @@ export default function profile() {
     loadUserData();
   }, []);
 
+  useFocusEffect(
+    useCallback(() => {
+      loadUserData();
+    }, [])
+  );
+
   const loadUserData = async () => {
     setLoading(true);
     try {
@@ -23,10 +29,8 @@ export default function profile() {
         setLoading(false);
         return null;
       }
-      console.log("token", token);
       const user_data = jwtDecode(token);
       const response = await GetUserById(user_data.sub);
-      console.log("response", response?.data);
       if (response && response.data) {
         setUserData(response.data);
         return response.data;
@@ -121,7 +125,12 @@ export default function profile() {
       
       <View className="mt-8">
         <View className="bg-white rounded-lg p-4 mb-4">
-          <Text className="font-bold text-lg mb-4">Thông tin cá nhân</Text>
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="font-bold text-lg">Thông tin cá nhân</Text>
+            <TouchableOpacity onPress={() => router.push("/user/edit-profile")}>
+              <Text className="text-blue-500 font-medium">Chỉnh sửa</Text>
+            </TouchableOpacity>
+          </View>
           
           <View className="mb-3">
             <Text className="text-gray-500 mb-1">Họ và tên</Text>

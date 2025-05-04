@@ -27,11 +27,9 @@ export default function PostDetail() {
         setLoading(true);
         const response = await GetPostById(slug);
         setPost(response.data);
-        console.log(response.data);
         // Fetch comments
         const commentsResponse = await GetReviewsByPost(slug);
         setComments(commentsResponse.data);
-        console.log(commentsResponse);
         // Get current user
         const token = await AsyncStorage.getItem('token');
         if (token) {

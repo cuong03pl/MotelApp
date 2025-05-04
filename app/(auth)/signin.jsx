@@ -53,7 +53,6 @@ export default function signin() {
         password: password.trim()
       });
       
-      console.log("Login response:", response?.data);
       
       // Kiểm tra cấu trúc response trước khi truy cập properties
       if (response && response.data) {
@@ -61,7 +60,6 @@ export default function signin() {
         
         // Kiểm tra token có tồn tại không
         if (!token) {
-          console.log("Token not found in response:", response.data);
           Alert.alert("Lỗi", "Không tìm thấy token đăng nhập, vui lòng thử lại sau");
           setLoading(false);
           return;
@@ -69,7 +67,6 @@ export default function signin() {
         
         // Save token to AsyncStorage
         await AsyncStorage.setItem("token", token);
-        console.log("Token saved:", token);
         
         // Get user data from token
         const userData = getTokenData(token);

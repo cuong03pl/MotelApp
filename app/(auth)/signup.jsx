@@ -49,7 +49,6 @@ export default function signup() {
         phoneNumber: phoneNumber.trim()
       });
 
-      console.log("Register response:", registerResponse?.data);
 
       if (registerResponse && registerResponse.data) {
         // Auto login after successful registration
