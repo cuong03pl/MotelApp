@@ -148,7 +148,7 @@ export default function profile() {
         
         <TouchableOpacity 
           className="bg-white rounded-lg p-4 mb-4"
-          onPress={() => router.push("/post/user-favorite")}
+          onPress={() => router.push("/favorites")}
         >
           <Text className="font-bold">Bài đăng đã lưu</Text>
         </TouchableOpacity>

@@ -29,6 +29,10 @@ export default function Layout() {
         name="chat"
         options={{ headerShown: false }}
       ></Stack.Screen>
+      <Stack.Screen
+        name="favorites"
+        options={{ headerShown: false }}
+      ></Stack.Screen>
      
     </Stack>
   );
