@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, Image, ScrollView, TouchableOpacity, ActivityIndicator, Linking, Share, TextInput, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import { GetPostById, GetReviewsByPost, CreateComment, GetUserById } from '../Services/ServiceAPI';
+import { GetPostById, GetReviewsByPost, CreateComment, GetUserById, CheckFavorite, AddFavoritePost } from '../Services/ServiceAPI';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import { convertPrice } from '../utils/convertPrice';
@@ -16,6 +16,8 @@ export default function PostDetail() {
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
   const [user, setUser] = useState(null);
+  const [isFavorited, setIsFavorited] = useState(false);
+  const [favoriteLoading, setFavoriteLoading] = useState(false);
   const { slug } = useLocalSearchParams();
   const router = useRouter();
 
@@ -35,7 +37,7 @@ export default function PostDetail() {
         if (token) {
           const user_data = jwtDecode(token);
           const response = await GetUserById(user_data.sub);
-          setUser(response.data);
+          setUser(response.data); 
         }
       } catch (error) {
         console.error('Error fetching post details:', error);
@@ -48,6 +50,30 @@ export default function PostDetail() {
       fetchPostDetail();
     }
   }, [slug]);
+
+  useEffect(() => {
+    if (!user || !post?.id) {
+      setIsFavorited(false);
+      return;
+    }
+
+    const fetchFavoriteStatus = async () => {
+      try {
+        const res = await CheckFavorite({ 
+          params: { 
+            userId: user.id, 
+            postId: post.id 
+          } 
+        });
+        setIsFavorited(res?.data === true);
+      } catch (error) {
+        console.error("Error checking favorite:", error);
+        setIsFavorited(false);
+      }
+    };
+
+    fetchFavoriteStatus();
+  }, [user, post]);
 
   const handleShare = async () => {
     // Share implementation
@@ -65,8 +91,8 @@ export default function PostDetail() {
     try {
       const commentData = {
         postId: post.id,
-        content: newComment.trim(),
-        rating: 5 // Default rating, can be modified if needed
+        comment: newComment.trim(),
+        userId: user.id,
       };
 
       await CreateComment(commentData);
@@ -79,6 +105,51 @@ export default function PostDetail() {
       setNewComment('');
     } catch (error) {
       console.error('Error creating comment:', error);
+    }
+  };
+
+  const handleFavorite = async () => {
+    if (!user) {
+      Alert.alert(
+        'Cần đăng nhập',
+        'Vui lòng đăng nhập để lưu bài đăng yêu thích',
+        [
+          {
+            text: 'Đăng nhập',
+            onPress: () => router.push('/signin')
+          },
+          {
+            text: 'Huỷ',
+            style: 'cancel'
+          }
+        ]
+      );
+      return;
+    }
+
+    if (!post?.id) {
+      Alert.alert('Lỗi', 'Không thể thêm bài đăng vào yêu thích. Vui lòng thử lại sau.');
+      return;
+    }
+
+    try {
+      setFavoriteLoading(true);
+      try {
+        // Thử gọi API để toggle yêu thích
+        await AddFavoritePost({
+          params: {
+            userId: user.id,
+            postId: post.id
+          }
+        });
+        // Đảo ngược trạng thái yêu thích
+        setIsFavorited(!isFavorited);
+      } catch (error) {
+        console.error('Error toggling favorite:', error);
+        Alert.alert('Lỗi', 'Không thể thêm vào yêu thích. Vui lòng thử lại.');
+      }
+    } finally {
+      setFavoriteLoading(false);
     }
   };
 
@@ -166,6 +237,17 @@ export default function PostDetail() {
           <Ionicons name="arrow-back" size={24} color="black" />
         </TouchableOpacity>
         <Text className="text-xl font-bold ml-4 flex-1">Chi tiết bài đăng</Text>
+        <TouchableOpacity onPress={handleFavorite} className="ml-2" disabled={favoriteLoading}>
+          {favoriteLoading ? (
+            <ActivityIndicator size="small" color="#2563eb" />
+          ) : (
+            <Ionicons 
+              name={isFavorited ? "heart" : "heart-outline"} 
+              size={24} 
+              color={isFavorited ? "#f43f5e" : "black"} 
+            />
+          )}
+        </TouchableOpacity>
         <TouchableOpacity onPress={handleShare} className="ml-2">
           <Ionicons name="share-outline" size={24} color="black" />
         </TouchableOpacity>
